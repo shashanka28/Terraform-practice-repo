@@ -1,0 +1,22 @@
+EMR CLUSTER (Elastic MapReduce) is managed by AWS which makes organization easy to process their own large amount of data by using several popular data frameworks such as hive, apache spark, hadoop, HUE, etc.
+
+when creating such one emr cluster, I recommend following steps in order step by step which helps you understand EMR components during creation and its functionality after creation.
+
+first, is always Roles and Policies for any AWS resources like EMR. Here, at EMR we need one service role and one instance profile to get started with creation of EMR. 
+
+Second, is about EC2 key pair which is a must needed resource to be created manually from your respective aws account on EC2 console, make sure you have that .pem file downloaded in your local machine upon creation of keypair.
+
+third, is about creating security groups using terraform code for your emr cluster, as we need to create different security groups: one for primary node, and one for core & task nodes.
+
+Fourth, is about creating instance profile using existing iam role which was created to use for instance profile on EMR cluster, use terraform code to deploy and make sure instance profile gets created in existing IAM ROLE. 
+
+Fifth, is having create emrcluster configuration in terraform code format using existing created 
+arn for existing service role, 
+arn for existing iam role for instance profile, 
+Ec2 keypair,
+security groups both master & coretask nodes and
+arn for existing instance profile
+
+Sixth, is when you see your emr cluster get created, and all your nodes have their assigned instances bootstraping, provisioning, and running.
+here make sure you add ssh port as inbound rules in existing security groups of primary, and core nodes. 
+

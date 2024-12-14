@@ -1,0 +1,100 @@
+{
+    "Rules": [
+        {
+            "Action": {
+                "SimpleScalingPolicyConfiguration": {
+                    "CoolDown": 300,
+                    "ScalingAdjustment": 1,
+                    "AdjustmentType": "CHANGE_IN_CAPACITY"
+                }
+            },
+            "Trigger": {
+                "CloudWatchAlarmDefinition": {
+                    "EvaluationPeriods": 1,
+                    "Namespace": "AWS/ElasticMapReduce",
+                    "Period": 300,
+                    "ComparisionOperator": "LESS_THAN_OR_EQUAL",
+                    "Statistic": "AVERAGE",
+                    "Threshold": 15.0,
+                    "Unit": "PERCENT",
+                    "MetricName": "YARNMemoryAvailablePercentage"
+                }
+            },
+            "Name": "ScaleOutMemoryPercentage",
+            "Description": "EMR scale up rule if YARN MEMORY available percentage is less than 15.0 for 5 minutes"
+        },
+        {
+            "Action": {
+                "SimpleScalingPolicyConfiguration": {
+                    "CoolDown": 300,
+                    "ScalingAdjustment": -1,
+                    "AdjustmentType": "CHANGE_IN_CAPACITY"
+                }
+            },
+            "Trigger": {
+                "CloudWatchAlarmDefinition": {
+                    "EvaluationPeriods": 1,
+                    "Namespace": "AWS/ElasticMapReduce",
+                    "Period": 300,
+                    "ComparisionOperator": "GREATER_THAN_OR_EQUAL",
+                    "Statistic": "AVERAGE",
+                    "Threshold": 10,
+                    "Unit": "PERCENT",
+                    "MetricName": "YARNMemoryAvailablePercentage"
+                }
+            },
+            "Name": "ScaleInMemoryPercentage",
+            "Description": "EMR scale down rule if YARN MEMORY available percentage is greater than 15.0 for 5 minutes"
+        },
+        {
+            "Action": {
+                "SimpleScalingPolicyConfiguration": {
+                    "CoolDown": 300,
+                    "ScalingAdjustment": 1,
+                    "AdjustmentType": "CHANGE_IN_CAPACITY"
+                }
+            },
+            "Trigger": {
+                "CloudWatchAlarmDefinition": {
+                    "EvaluationPeriods": 5,
+                    "Namespace": "AWS/ElasticMapReduce",
+                    "Period": 60,
+                    "ComparisionOperator": "GREATER_THAN_OR_EQUAL",
+                    "Statistic": "AVERAGE",
+                    "Threshold": 0.7,
+                    "Unit": "COUNT",
+                    "MetricName": "ContainerPendingRatio"
+                }
+            },
+            "Name": "ScaleOutContainerPR",
+            "Description": "EMR scale up rule if container pending ratio is greater than 0.7 for 5 minutes"
+        },
+        {
+            "Action": {
+                "SimpleScalingPolicyConfiguration": {
+                    "CoolDown": 600,
+                    "ScalingAdjustment": -1,
+                    "AdjustmentType": "CHANGE_IN_CAPACITY"
+                }
+            },
+            "Trigger": {
+                "CloudWatchAlarmDefinition": {
+                    "EvaluationPeriods": 10,
+                    "Namespace": "AWS/ElasticMapReduce",
+                    "Period": 60,
+                    "ComparisionOperator": "LESS_THAN_OR_EQUAL",
+                    "Statistic": "AVERAGE",
+                    "Threshold": 0.2,
+                    "Unit": "COUNT",
+                    "MetricName": "ContainerPendingRatio"
+                }
+            },
+            "Name": "ScaleInContainerPR",
+            "Description": "EMR scale down rule if container pending ratio is less than 0.2 for 10 minutes"
+        }
+    ],
+    "Constraints": {
+        "MinCapacity": 2,
+        "MaxCapacity": 10
+    }
+}
