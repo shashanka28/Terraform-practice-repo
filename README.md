@@ -2,7 +2,7 @@
 
 ################ AWS EMR service ###################
 
-services included 
+services included:
 
 -->IAM 
 -->S3
