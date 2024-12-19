@@ -8,6 +8,17 @@ on:
 permissions:
   contents: read
 
+inputs:
+  folder:
+    description: 'Select the folder to run'
+    required: true
+    default: 'modules/AWS/EMR_service'
+    options:
+      - 'modules/AWS/EMR_service'
+      - 'modules/Azure'
+      - 'modules/GCP'
+
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -18,16 +29,6 @@ jobs:
     defaults:
       run:
         shell: bash
-
-    inputs:
-      folder:
-        description: 'Select the folder to run'
-        required: true
-        default: 'modules/AWS/EMR_service'
-        options:
-          - 'modules/AWS/EMR_service'
-          - 'modules/Azure'
-          - 'modules/GCP'
 
     steps:
     # Checkout the repository to the GitHub Actions runner
