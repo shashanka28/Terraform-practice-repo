@@ -16,7 +16,11 @@ gcp-infrastructure/
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   └── monitoring/
+│   ├── monitoring/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── iam/
 │       ├── main.tf
 │       ├── variables.tf
 │       └── outputs.tf
@@ -33,3 +37,4 @@ Use-Case:
 You are tasked with setting up a production-ready, scalable web application on Google Cloud Platform (GCP). 
 The application needs high availability, security, and monitoring. 
 Terraform will be used to define, deploy, and manage the infrastructure as code.
+
