@@ -1,0 +1,35 @@
+gcp-infrastructure/
+├── modules/
+│   ├── network/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── gke/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── database/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── storage/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── monitoring/
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+├── main.tf
+├── variables.tf
+├── outputs.tf
+└── terraform.tfvars
+
+
+A detailed Terraform script for the given GCP cloud infrastructure use case, structured to match the provided directory hierarchy. 
+Each module is defined to handle a specific component of the infrastructure, ensuring modularity and reusability.
+
+Use-Case:
+You are tasked with setting up a production-ready, scalable web application on Google Cloud Platform (GCP). 
+The application needs high availability, security, and monitoring. 
+Terraform will be used to define, deploy, and manage the infrastructure as code.

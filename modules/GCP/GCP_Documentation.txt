@@ -1,1 +1,61 @@
 Google Cloud Documentation notes
+
+
+
+
+Google Cloud Platform (GCP) offers a wide range of foundational services across various domains.
+
+Computing:
+These services provide the computational power to run applications and manage workloads.
+Compute Engine (AWS EC2): Virtual machines (VMs) in the cloud. It allows you to deploy scalable VMs with your choice of operating system and software.
+App Engine (AWS Elastic Beanstalk): A fully managed platform for building and deploying applications without worrying about infrastructure. It supports multiple programming languages.
+Cloud Functions (AWS Lambda): A serverless execution environment for running lightweight, event-driven functions.
+Google Kubernetes Engine (GKE) (AWS EKS): A managed Kubernetes service for running containerized applications.
+Cloud Run (AWS Fargate): A serverless platform for running containerized applications triggered by HTTP requests or events.
+
+Networking:
+These services handle network connectivity, security, and content delivery.
+VPC (Virtual Private Cloud) (AWS VPC): Provides isolated networking environments with customizable subnets, firewalls, and routing.
+Cloud Load Balancing (AWS ELB): Distributes traffic across multiple resources to ensure availability and performance.
+Cloud CDN (Content Delivery Network) (AWS Cloudfront): Speeds up content delivery by caching it closer to end-users globally.
+Cloud Interconnect (AWS DirectConnect): Enables secure, high-speed connections between on-premises infrastructure and GCP.
+Cloud DNS (AWS ROUTE53): A scalable, reliable, and managed DNS service for hosting domain names.
+Cloud NAT(AWS NAT GATEWAY): Provides managed network address translation for instances without external IPs.
+
+Storage:
+GCP offers various storage solutions based on use cases like object storage, databases, and data archiving.
+Cloud Storage (AWS S3): Scalable object storage for unstructured data (images, videos, backups).
+Persistent Disk (AWS EBS): Block storage for Compute Engine VMs.
+Filestore (AWS EFS): Managed file storage for applications that require a file system interface.
+Bigtable (AWS Keyspaces or DynamoDB): A NoSQL database for high-throughput workloads like IoT and analytics.
+Cloud SQL (AWS RDS): Managed relational databases (MySQL, PostgreSQL, SQL Server).
+Cloud Spanner (AWS Aurora): A global-scale relational database for applications needing strong consistency and high availability.
+Cloud Firestore (AWS DynamoDB): A NoSQL database for mobile, web, and server development.
+
+Content Delivery:
+Services to enhance content delivery for faster and reliable user experiences.
+Cloud CDN (AWS CloudFront): Serves content from Google's globally distributed edge locations for low-latency access.
+Media CDN (AWS CloudFront): Optimized for streaming large volumes of media content with high performance.
+
+Administration and Security:
+Tools and services to ensure your GCP environment is secure and manageable.
+Cloud IAM (Identity and Access Management) (AWS IAM): Manages access to GCP resources with fine-grained permissions.
+Cloud Identity (AWS IAM & Directory Service): A unified solution for identity and access management.
+Security Command Center (AWS SecurityHub): A security and risk management platform for identifying vulnerabilities.
+Cloud Key Management (KMS) (AWS KMS): Manages cryptographic keys securely.
+Cloud Audit Logs (AWS CloudTrail): Tracks activities in your GCP environment for auditing and troubleshooting.
+
+Deployment and Management:
+Tools to manage and automate application deployment and resource configuration.
+Cloud Deployment Manager (AWS CloudFormation): Automates resource deployment using configuration files.
+Terraform on GCP: An open-source infrastructure as code tool for managing GCP resources.
+Cloud Monitoring (AWS CloudWatch): Observes the health of your applications and infrastructure.
+Cloud Logging (AWS CloudWatch Logs): Centralized log management and analysis for GCP resources.
+Cloud Profiler (AWS X-RAY): Analyzes application performance to identify bottlenecks.
+
+Automation Technologies:
+Services for automating tasks and workflows in your environment.
+Cloud Build (AWS CodeBuild): A CI/CD tool for building, testing, and deploying code.
+Cloud Composer (AWS Glue): A managed Apache Airflow service for orchestrating workflows.
+Cloud Tasks (AWS SQS): A service for asynchronous task execution and delivery.
+Cloud Scheduler (AWS EventBridge/CloudWatchEvents): A fully managed cron job service for task scheduling.
