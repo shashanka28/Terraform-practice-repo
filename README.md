@@ -16,7 +16,7 @@ services included:
 
 
 
-################ Highly Scalable & availability Web Application in GCP cloud infrastruture ###################
+####### Highly Scalable & availability Web Application in GCP cloud infrastruture ########
 
 services included:
 
