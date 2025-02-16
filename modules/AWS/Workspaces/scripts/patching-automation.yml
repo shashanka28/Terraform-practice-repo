@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Starting patching automation..."
+aws ssm send-command --document-name "AWS-RunPatchBaseline" --targets "Key=instanceIds,Values={{ instance_id }}"

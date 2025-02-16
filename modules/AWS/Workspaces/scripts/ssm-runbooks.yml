@@ -1,0 +1,11 @@
+---
+version: 1
+runbook_name: "WorkSpace Creation"
+tasks:
+  - name: "Create Workspace for User"
+    action: "aws:runCommand"
+    inputs:
+      documentName: "AWS-RunShellScript"
+      parameters:
+        commands:
+          - echo "Creating workspace for user: {{ selected_user }}"

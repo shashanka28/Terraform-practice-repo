@@ -14,7 +14,3 @@ variable "bundle_id" {
 }
 
 
-variable "user_email" {
-  description = "The email of the user who will be assigned the workspace"
-  type        = string
-}

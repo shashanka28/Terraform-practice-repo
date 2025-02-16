@@ -12,3 +12,8 @@ terraform {
 provider "aws" {
   region = "us-west-2"  # Your desired region
 }
+
+provider "aws" {
+  alias  = "prod"
+  region = "us-east-1"  # Specify the region for the prod environment
+}
