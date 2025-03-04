@@ -1,0 +1,17 @@
+
+
+
+
+
+
+=============================================================================
+
+contents for the scripts folder, which includes scripts for installing IBM WebSphere Application Server (WAS), deploying applications to WAS, and configuring WebSphere.
+
+install-websphere.sh ---> this script will install IBM WebSphere Application Server on an EC2 instance. The script assumes that you have the WebSphere installer available.
+
+deploy-websphere.sh ----> this script deploys a .war file to WebSphere using the wsadmin tool. It assumes that you have a deploy_application.py script, which will be triggered by wsadmin to deploy the application
+
+configure-websphere.sh ----> this script configures WebSphere Application Server for certain settings like creating data sources, JMS queues, or other necessary configurations
+
+=============================================================================

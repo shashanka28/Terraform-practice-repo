@@ -1,0 +1,70 @@
+pipeline {
+    agent any 
+
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_DEFAULT_REGION = 'us-east-1'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // checkout the code from the GIT repository
+                git 'https://github.com/my_repo/websphere-aws-project.git'
+            }
+        }
+
+        stage('Terraform init') {
+            steps {
+                // Initialize Terraform
+                script {
+                    echo "initializing terraform...."
+                    sh 'terraform init -input = false'
+                }
+            }
+        }
+
+        stage ('Terraform Plan') {
+            steps {
+                // Plan the infrastructure changes
+                script {
+                    echo " Running Terraform Plan..."
+                    sh 'terraform plan -out=tfplan -input=false'
+                }
+            }
+        }
+
+        stage('Terraform apply') {
+            steps {
+                // Apply changes to AWS
+                script {
+                    echo "Applying Terraform changes..."
+                    sh 'terraform apply -input=false -auto-approve tfplan'
+                }
+            }
+        }
+
+        stage ('Cleanup') {
+            steps {
+                // Optional: Clean up the working directory or resources if needed
+                echo "Cleaning up..."
+            }
+        }
+    }
+
+    post {
+        always {
+            //Cleanup actions or notify team about the result (slack or webex notifications)
+            echo "Terraform Pipeline Completed!"
+        }
+
+        success { 
+            echo "Terraform Pipeline completed succesfully!"
+        }
+
+        failure {
+            echo "Terraform Pipeline failed!"
+        }
+    }
+}

@@ -1,0 +1,33 @@
+pipeline{
+    agent any
+
+    environment {
+        WAS_SERVER = "WEBSPHERE_SERVER_URL"
+        WAS_USER = "WAS_ADMIN_USER_NAME"
+        WAS_PASS = "WAS_ADMIN_PASSWORD"
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                git 'https://github.com/your-repo/application.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+
+        stage ('Deploy') {
+            steps {
+                script {
+                    sh """
+                    wsadmin - lang python -f deploy_application.py ${WAS_SERVER} ${WAS_USER} ${WAS_PASS}
+                    """
+                }
+            }
+        }
+    }
+}
