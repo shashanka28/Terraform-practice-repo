@@ -6,7 +6,7 @@ on:
       folder:
         description: 'Select the folder to run'
         required: true
-        default: 'modules/AWS/EMR_service'
+        type: choice
         options:
           - 'modules/AWS'
           - 'modules/Azure'
@@ -48,7 +48,7 @@ jobs:
         if: ${{ github.event.inputs.folder == 'modules/AWS' && github.event.inputs.subfolder != '' }}
         run: |
           echo "Running workflow for modules/AWS -> subfolder: ${{ github.event.inputs.subfolder }}"
-          
+
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
