@@ -1,0 +1,33 @@
+
+
+
+
+
+
+
+terraform-aws-deployment/
+│── ansible/                         # Ansible Playbooks for EC2 Automation
+│   ├── playbooks/
+│   │   ├── start-ec2.yml             # Start EC2 Playbook
+│   │   ├── stop-ec2.yml              # Stop EC2 Playbook
+│── modules/
+│   ├── ecs/                         # ECS Cluster & Blue-Green Deployment
+│   ├── ec2/                         # EC2 Instances (Ansible Execution Remote)
+│   ├── rds/                         # RDS & Redshift Databases
+│   ├── s3/                          # S3 Data Lake
+│   ├── dms/                         # AWS DMS for On-Prem DB Migration
+│   ├── glue/                        # AWS Glue for Data Processing
+│   ├── transfer-family/             # AWS Transfer Family (SFTP)
+│   ├── monitoring/                  # CloudWatch & Splunk Integration
+│   ├── cost-estimation/             # AWS Cost Explorer Integration
+│── pipelines/
+│   ├── github-actions/               # GitHub Actions Workflow
+│   │   ├── deploy.yml
+│   ├── argocd/                       # ArgoCD GitOps
+│   │   ├── application.yaml
+│── README.md
+│── main.tf                            # Terraform Root Module
+│── variables.tf
+│── outputs.tf
+│── providers.tf
+│── terraform.tfvars

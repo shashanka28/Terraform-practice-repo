@@ -8,9 +8,19 @@ on:
         required: true
         default: 'modules/AWS/EMR_service'
         options:
-          - 'modules/AWS/EMR_service'
-          - 'modules/AWS/ECR'
-          -
+          - 'modules/AWS'
+          - 'modules/Azure'
+          - 'modules/GCP'
+      subfolder:
+        description: "select a AWS folder name (only if available):"
+        required: false
+        type: choice
+        options:
+          - EMR_service
+          - ECR
+          - IBM_WAS_AWS
+          - Workspaces
+
   push:
     branches: [ "main" ]
   pull_request:
@@ -21,6 +31,24 @@ permissions:
 
 
 jobs:
+
+  validate-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate subfolder selection
+        run: |
+          echo "module selected: ${{ github.event.inputs.folder }}"
+          echo "subfolder selected: ${{ github.event.inputs.subfolder }}"
+
+          if [[ "${{ github.event.inputs.folder }}" != "modules/AWS" && "${{ github.event.inputs.subfolder }}" != "" ]]; then
+            echo "ERROR: Subfolder should only be selected if folder is 'modules/AWS'"
+            exit 1
+          fi
+      - name: Proceed if modules/AWS and subfolder are set
+        if: ${{ github.event.inputs.folder == 'modules/AWS' && github.event.inputs.subfolder != '' }}
+        run: |
+          echo "Running workflow for modules/AWS -> subfolder: ${{ github.event.inputs.subfolder }}"
+          
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest

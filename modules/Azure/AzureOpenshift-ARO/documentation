@@ -1,0 +1,59 @@
+
+
+
+
+terraform-azure-openshift/
+│── modules/                     # Terraform Modules
+│   ├── aro-cluster/             # OpenShift ARO Cluster
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   ├── networking/              # Azure VNet, Subnets, NSGs
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   ├── dns-certificates/        # Azure DNS, SSL/TLS, Key Vault
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   ├── acr-registry/            # Azure Container Registry (ACR)
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│── environments/                 # Environment-specific configurations
+│   ├── dev/
+│   │   ├── terraform.tfvars      # Dev-specific Terraform variables
+│   ├── staging/
+│   │   ├── terraform.tfvars      # Staging-specific Terraform variables
+│   ├── prod/
+│   │   ├── terraform.tfvars      # Prod-specific Terraform variables
+│── pipelines/                    # CI/CD Pipelines
+│   ├── azure-pipelines.yml       # Azure DevOps Pipeline for multi-env deployment
+│   ├── tekton-pipeline.yaml      # Tekton Pipeline for CI (Build & Push to ACR)
+│   ├── argocd-application.yaml   # ArgoCD Application Deployment
+│── scripts/                      # Deployment Scripts
+│   ├── deploy-azure.sh           # Deploy workloads to OpenShift ARO
+│── manifests/                    # Kubernetes Manifests (for ArgoCD)
+│   ├── dev/
+│   │   ├── deployment.yaml        # App Deployment for Dev
+│   │   ├── service.yaml           # Service for Dev
+│   │   ├── ingress.yaml           # Ingress for Dev
+│   ├── staging/
+│   │   ├── deployment.yaml        # App Deployment for Staging
+│   │   ├── service.yaml           # Service for Staging
+│   │   ├── ingress.yaml           # Ingress for Staging
+│   ├── prod/
+│   │   ├── deployment.yaml        # App Deployment for Prod
+│   │   ├── service.yaml           # Service for Prod
+│   │   ├── ingress.yaml           # Ingress for Prod
+│── monitoring/                    # Monitoring & Logging
+│   ├── grafana-dashboards/        # Grafana Dashboard Templates
+│   ├── prometheus-rules/          # Prometheus Alert Rules
+│── security/                      # Security Policies & IAM
+│   ├── iam-policies/              # IAM Roles & Policies
+│   ├── network-policies/          # OpenShift Network Policies
+│── main.tf                        # Root Terraform file (calls modules)
+│── providers.tf                    # Terraform Provider Configuration
+│── variables.tf                    # Terraform Global Variables
+│── outputs.tf                      # Terraform Outputs
+│── README.md                       # Documentation
