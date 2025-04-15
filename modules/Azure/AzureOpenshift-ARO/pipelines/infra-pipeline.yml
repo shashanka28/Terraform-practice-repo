@@ -1,4 +1,9 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - dev
+      - staging
+      - prod
 
 pool:
     vmImage: ubuntu-latest
@@ -12,6 +17,8 @@ variables:
       value: ${AZURE_SUBSCRIPTION_ID}
     - name: ARM_TENANT_ID
       value: ${AZURE_TENANT_ID}
+    - name: TF_VERSION
+      value: '1.6.0'
 
 stages:
     - stage: Terraform_Provision
@@ -21,7 +28,7 @@ stages:
             - checkout: self
             - task: TerraformInstaller@0
               inputs:
-                terraformVersion: 'latest'
+                terraformVersion: ${TF_VERSION}
 
             - script: |
                 terraform init

@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-push-pipeline
+spec:
+  params:
+    - name: app-name
+      type: string
+    - name: git-url
+      type: string
+    - name: image-url
+      type: string
+
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: $(parms.git-url)
+    - name: build-image
+      runAfter: [git-clone]
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: $(params.image-url)
+        - name: CONTEXT
+          value: . 
+
+    - name: push-image
+      runAfter: [build-image]
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: $(params.image-url)
+        - name: CONTEXT
+          value: .
+        - name: STORAGE_DRIVER
+          value: vfs

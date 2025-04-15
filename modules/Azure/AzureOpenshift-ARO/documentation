@@ -1,59 +1,58 @@
-
-
-
-
 terraform-azure-openshift/
-│── modules/                     # Terraform Modules
-│   ├── aro-cluster/             # OpenShift ARO Cluster
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   ├── networking/              # Azure VNet, Subnets, NSGs
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   ├── dns-certificates/        # Azure DNS, SSL/TLS, Key Vault
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   ├── acr-registry/            # Azure Container Registry (ACR)
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│── environments/                 # Environment-specific configurations
+├── main.tf                        # Root module to call child modules and define resources
+├── providers.tf                  # Azure provider configuration
+├── variables.tf                  # Input variables shared across modules
+├── outputs.tf                    # Output values from root module
+├── terraform.tfvars              # Default variable values
+├── modules/
+│   ├── aro-cluster/
+│   │   ├── main.tf               # Defines ARO cluster creation
+│   │   ├── variables.tf          # Input variables for ARO cluster
+│   │   └── outputs.tf            # Outputs like API server URL, credentials
+│   ├── networking/
+│   │   ├── main.tf               # VNet, subnets, and NSGs
+│   │   ├── variables.tf          # Network-related variables
+│   │   └── outputs.tf            # Network-related outputs
+│   ├── acr-registry/
+│   │   ├── main.tf               # Azure Container Registry setup
+│   │   ├── variables.tf          # ACR-specific inputs
+│   │   └── outputs.tf            # ACR login server and credentials
+│   ├── dns-certificates/
+│   │   ├── main.tf               # DNS zone and SSL/TLS cert management
+│   │   ├── variables.tf          # DNS and cert inputs
+│   │   └── outputs.tf            # Outputs like DNS name, cert thumbprint
+│   └── identity/
+│       ├── main.tf               # Managed identity and RBAC
+│       ├── variables.tf          # Identity input vars
+│       └── outputs.tf            # Identity output (principal ID, role ID)
+├── environments/
 │   ├── dev/
-│   │   ├── terraform.tfvars      # Dev-specific Terraform variables
+│   │   ├── backend.tf            # Remote backend config for dev
+│   │   └── terraform.tfvars      # Environment-specific variables
 │   ├── staging/
-│   │   ├── terraform.tfvars      # Staging-specific Terraform variables
-│   ├── prod/
-│   │   ├── terraform.tfvars      # Prod-specific Terraform variables
-│── pipelines/                    # CI/CD Pipelines
-│   ├── azure-pipelines.yml       # Azure DevOps Pipeline for multi-env deployment
-│   ├── tekton-pipeline.yaml      # Tekton Pipeline for CI (Build & Push to ACR)
-│   ├── argocd-application.yaml   # ArgoCD Application Deployment
-│── scripts/                      # Deployment Scripts
-│   ├── deploy-azure.sh           # Deploy workloads to OpenShift ARO
-│── manifests/                    # Kubernetes Manifests (for ArgoCD)
-│   ├── dev/
-│   │   ├── deployment.yaml        # App Deployment for Dev
-│   │   ├── service.yaml           # Service for Dev
-│   │   ├── ingress.yaml           # Ingress for Dev
-│   ├── staging/
-│   │   ├── deployment.yaml        # App Deployment for Staging
-│   │   ├── service.yaml           # Service for Staging
-│   │   ├── ingress.yaml           # Ingress for Staging
-│   ├── prod/
-│   │   ├── deployment.yaml        # App Deployment for Prod
-│   │   ├── service.yaml           # Service for Prod
-│   │   ├── ingress.yaml           # Ingress for Prod
-│── monitoring/                    # Monitoring & Logging
-│   ├── grafana-dashboards/        # Grafana Dashboard Templates
-│   ├── prometheus-rules/          # Prometheus Alert Rules
-│── security/                      # Security Policies & IAM
-│   ├── iam-policies/              # IAM Roles & Policies
-│   ├── network-policies/          # OpenShift Network Policies
-│── main.tf                        # Root Terraform file (calls modules)
-│── providers.tf                    # Terraform Provider Configuration
-│── variables.tf                    # Terraform Global Variables
-│── outputs.tf                      # Terraform Outputs
-│── README.md                       # Documentation
+│   │   ├── backend.tf            # Remote backend config for staging
+│   │   └── terraform.tfvars      # Staging variable overrides
+│   └── prod/
+│       ├── backend.tf            # Remote backend config for prod
+│       └── terraform.tfvars      # Production variable overrides
+├── manifests/
+│   ├── deployment.yaml           # OpenShift/K8s Deployment manifest
+│   ├── service.yaml              # K8s Service to expose deployment
+│   └── ingress.yaml              # OpenShift Route or Ingress definition
+├── pipelines/
+│   ├── azure-pipelines.yml       # Azure DevOps pipeline for infra + CD
+│   ├── tekton-pipeline.yaml      # Tekton pipeline for CI (build & push)
+│   └── argocd-application.yaml   # ArgoCD app definition to deploy workloads
+├── scripts/
+│   └── deploy-azure.sh           # Bash script to orchestrate deployment
+├── monitoring/
+│   ├── grafana-dashboards/
+│   │   └── openshift-dashboard.json  # Grafana dashboard JSON
+│   └── prometheus-rules/
+│       └── alert-rules.yaml      # Prometheus alerting rules
+├── security/
+│   ├── iam-policies/
+│   │   └── aro-role.json         # IAM role definition for ARO
+│   └── network-policies/
+│       └── restrict-namespace.yaml # NetworkPolicy to restrict namespace access
+└── README.md                     # Project overview and documentation
