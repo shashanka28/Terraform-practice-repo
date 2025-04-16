@@ -1,0 +1,80 @@
+terraform-wordpress-azure/
+│
+├── environments/
+│   ├── dev/
+│   │   ├── backend.tf               # Remote state backend for dev
+│   │   ├── terraform.tfvars         # Environment-specific variables
+│   │   └── provider.tf              # Azure provider config
+│   └── prod/
+│       ├── backend.tf
+│       ├── terraform.tfvars
+│       └── provider.tf
+│
+├── modules/
+│   ├── app_service_wordpress/       # WordPress App Service module
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── mysql_flexible_server/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── storage_cdn/
+│   │   ├── main.tf                  # Blob Storage + CDN + CORS
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── monitoring/
+│   │   ├── main.tf                  # Application Insights or Log Analytics
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── network/
+│   │   ├── main.tf                  # VNet, Subnets, NSG, private endpoints
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   └── security/
+│       ├── main.tf                  # WAF, HTTPS enforcement, secure headers
+│       ├── variables.tf
+│       └── outputs.tf
+│
+├── scripts/
+│   ├── post-deploy.ps1              # Powershell for post-WP setup
+│   ├── backup-mysql.sh              # Scheduled DB backup
+│   ├── media-upload.py              # Upload WordPress media to Blob
+│   └── wp-hardening.sh              # Security hardening automation
+│
+├── pipelines/
+│   ├── azure-pipelines.yml          # Azure DevOps YAML pipeline
+│   └── github-actions.yml           # GitHub Actions CI/CD pipeline
+│
+├── main.tf                          # Root module to orchestrate everything
+├── variables.tf
+├── outputs.tf
+└── README.md                        # Project overview and deployment guide
+
+
+
+Module / Folder                 | Purpose
+==============================================================================
+
+app_service_wordpress           | Deploy WordPress on App Service with autoscale, health checks
+mysql_flexible_server           | Secure backend DB with firewall rules, SSL enforced
+storage_cdn                     | Store WP media in Blob, serve via Azure CDN, apply CORS rules
+network                         | VNet, Subnets, Private Endpoints, NSGs
+monitoring                      | App Insights integration for logs and availability
+security                        | Enable WAF, force HTTPS, configure security headers and DDoS plan
+scripts/post-deploy.ps1         | Automate WordPress plugin install, theme setup, and initial config via PowerShell
+scripts/backup-mysql.sh         | Automate scheduled backup of MySQL Flexible Server database using Azure CLI
+scripts/media-upload.py         | Upload WordPress media to Azure Blob and set proper content-type/CORS
+scripts/wp-hardening.sh         | Enforce security hardening (file permissions, disable XML-RPC, secure headers)
+pipelines/azure-pipelines.yml   | CI/CD pipeline to deploy Terraform infra and trigger WordPress setup in Azure DevOps
+pipelines/github-actions.yml    | GitHub Actions CI/CD for infra provisioning and WordPress deployment
+environments/dev                | Dev-specific provider, backend config, and variable overrides
+environments/prod               | Prod-specific configuration with isolated state backend
+main.tf                         | Root Terraform config that calls individual modules
+variables.tf                    | Defines input variables for the Terraform modules
+outputs.tf                      | Exports essential values (e.g., WP URL, DB connection string)
