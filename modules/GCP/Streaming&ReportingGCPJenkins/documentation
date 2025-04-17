@@ -1,0 +1,123 @@
+gcp-analytics-platform/
+├── modules/
+│   ├── network/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── gke/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── pubsub/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── bigquery/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── bigtable/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── logging-monitoring/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── iam/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── jenkins/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── docker-helm-config/
+│   │   ├── main.tf
+│   │   ├── values.yaml       # Optional Helm values config
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   ├── istio/
+│   │   ├── main.tf
+│   │   ├── install-istio.tf  # Optional if not using script
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   └── service-accounts/
+│       ├── main.tf
+│       ├── variables.tf
+│       ├── outputs.tf
+│       └── README.md
+├── envs/
+│   ├── dev/
+│   │   ├── main.tf
+│   │   ├── backend.tf
+│   │   ├── terraform.tfvars
+│   │   └── provider.tf
+│   ├── prod/
+│   │   ├── main.tf
+│   │   ├── backend.tf
+│   │   ├── terraform.tfvars
+│   │   └── provider.tf
+├── scripts/
+│   ├── setup-jenkins.sh
+│   ├── install-istio.sh
+│   └── init-terraform.sh       # Helper script to init & validate
+├── pipelines/
+│   ├── Jenkinsfile              # CI/CD Pipeline for deployment
+│   └── Dockerfile               # App Docker build
+├── templates/
+│   └── gke-deployment.yaml      # Sample K8s deployment
+├── terraform.tfvars.example
+├── backend.tf                   # Optional: remote backend for global setup
+├── main.tf                      # Entrypoint for root
+├── provider.tf                  # Common GCP provider config
+├── variables.tf
+├── outputs.tf
+├── versions.tf                  # Lock Terraform version/provider
+├── README.md
+├── .gitignore
+└── Makefile                     # Optional: CLI helpers
+
+
+
+
+
+Module / Folder                     | Purpose
+======================================================================
+modules/network/                    | Sets up VPC, subnets, firewall rules, and related networking components
+modules/gke/                        | Provisions GKE clusters, node pools, and workload identity setup
+modules/pubsub/                     | Creates Pub/Sub topics and subscriptions for messaging/streaming pipelines
+modules/bigquery/                   | Provisions datasets, tables, and access policies in BigQuery
+modules/bigtable/                   | Sets up Bigtable instances and clusters for NoSQL large-scale workloads
+modules/logging-monitoring/         | Enables Stackdriver monitoring, logging sinks, alerting policies
+modules/iam/                        | Defines roles, IAM bindings, and policy customizations
+modules/service-accounts/           | Creates and manages service accounts and their permissions
+modules/jenkins/                    | Deploys Jenkins on GKE or VM, configures persistent volume and plugins
+modules/docker-helm-config/         | Manages Docker images and Helm charts deployment into GKE
+modules/istio/                      | Installs and configures Istio or Anthos Service Mesh for microservices
+
+envs/dev/                           | Contains environment-specific configs and Terraform state for Dev
+envs/prod/                          | Contains environment-specific configs and Terraform state for Prod
+scripts/                            | Shell scripts to automate setup like Jenkins, Istio, etc.
+pipelines/                          | Contains Jenkins pipeline definition (Jenkinsfile) and Dockerfile
+templates/                          | Raw Kubernetes YAMLs or Helm values templates
+terraform.tfvars.example            | Sample of required inputs for reuse across environments
+backend.tf                          | Defines remote state config (GCS bucket, locking) at root level
+main.tf                             | Root module that calls all submodules
+provider.tf                         | Configures GCP provider and project credentials
+variables.tf                        | Declares input variables for root module
+outputs.tf                          | Exports outputs from the root module
+versions.tf                         | Locks Terraform CLI and provider versions
+documentation                       | Documentation for the root project
+.gitignore                          | Ignores files like .terraform/, .tfstate, and credentials
+Makefile (optional)                 | CLI shortcuts for plan, apply, etc. using make
