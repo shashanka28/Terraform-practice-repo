@@ -1,4 +1,9 @@
 gcp-infrastructure/
+├── backend.tf               <-- ✅ Added: GCS backend with state locking
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
 ├── modules/
 │   ├── network/
 │   │   ├── main.tf
@@ -20,14 +25,11 @@ gcp-infrastructure/
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   ├── iam/
+│   └── iam/
 │       ├── main.tf
 │       ├── variables.tf
 │       └── outputs.tf
-├── main.tf
-├── variables.tf
-├── outputs.tf
-└── terraform.tfvars
+
 
 
 A detailed Terraform script for the given GCP cloud infrastructure use case, structured to match the provided directory hierarchy. 
@@ -37,4 +39,46 @@ Use-Case:
 You are tasked with setting up a production-ready, scalable web application on Google Cloud Platform (GCP). 
 The application needs high availability, security, and monitoring. 
 Terraform will be used to define, deploy, and manage the infrastructure as code.
+Terraform’s GCS backend automatically uses Firestore in Native mode for state locking. 
+You must enable Firestore in Native mode in the same GCP project where your GCS bucket lives.
 
+Module / Folder                     | Purpose
+===============================================================
+
+gcp-infrastructure/                 | Root Terraform configuration for managing all infrastructure components.
+├── main.tf                         | Entry point that calls modules and defines root-level resources.
+├── variables.tf                    | Input variables shared across modules and root module.
+├── outputs.tf                      | Output values exported from the root configuration.
+├── terraform.tfvars                | Concrete values for declared variables (used with terraform plan/apply).
+├── backend.tf                      | Configures remote state backend in GCS with Firestore-based locking.
+
+modules/                            | Collection of reusable Terraform modules for infrastructure components.
+├── network/                        | Defines VPC networks, subnets, firewall rules, and routing.
+│   ├── main.tf                     | Network resources configuration.
+│   ├── variables.tf                | Inputs for customizing network resources.
+│   └── outputs.tf                  | Exports network resource outputs like subnet names, VPC ID, etc.
+
+├── gke/                            | Manages Google Kubernetes Engine cluster and associated resources.
+│   ├── main.tf                     | GKE cluster definition.
+│   ├── variables.tf                | Cluster parameters like node pool size, machine type, etc.
+│   └── outputs.tf                  | Outputs like cluster endpoint, credentials, etc.
+
+├── database/                       | Manages SQL/Cloud SQL or other DB resources.
+│   ├── main.tf                     | Database instance and user setup.
+│   ├── variables.tf                | DB settings like instance type, DB name, users, etc.
+│   └── outputs.tf                  | Outputs like DB connection string, IP, etc.
+
+├── storage/                        | Manages Cloud Storage buckets and object lifecycle rules.
+│   ├── main.tf                     | Storage bucket configuration.
+│   ├── variables.tf                | Parameters for bucket naming, permissions, etc.
+│   └── outputs.tf                  | Outputs like bucket URLs or names.
+
+├── monitoring/                     | Configures Stackdriver monitoring, alerts, and logging sinks.
+│   ├── main.tf                     | Monitoring alerts, log sinks setup.
+│   ├── variables.tf                | Inputs for alert policies, notification channels, etc.
+│   └── outputs.tf                  | Outputs for created monitoring resources.
+
+├── iam/                            | Manages IAM roles, service accounts, and bindings.
+│   ├── main.tf                     | IAM policy bindings and custom roles.
+│   ├── variables.tf                | Inputs for principals, roles, etc.
+│   └── outputs.tf                  | Outputs like service account emails or role IDs.
