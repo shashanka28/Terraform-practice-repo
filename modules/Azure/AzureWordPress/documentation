@@ -56,25 +56,118 @@ terraform-wordpress-azure/
 ├── outputs.tf
 └── README.md                        # Project overview and deployment guide
 
+terraform-wordpress-azure/
+│
+├── environments/                          # 👈 Environment-specific configurations
+│   ├── dev/
+│   │   ├── backend.tf                     # Remote backend config (e.g., Azure Storage)
+│   │   ├── terraform.tfvars              # Dev-specific variables
+│   │   └── provider.tf                   # Azure provider for dev
+│   └── prod/
+│       ├── backend.tf
+│       ├── terraform.tfvars
+│       └── provider.tf
+│
+├── modules/                               # 👈 Reusable modules for each resource group
+│   ├── app_service_wordpress/             # WordPress App Service setup
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── mysql_flexible_server/             # Managed MySQL DB with SSL
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── storage_cdn/                       # Blob Storage + CDN with CORS
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── monitoring/                        # App Insights / Log Analytics
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── network/                           # VNet, Subnets, NSG, Private Endpoints
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   ├── security/                          # Key Vault, HTTPS redirect, WAF, headers
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+│   └── keyvault/                          # Store secrets securely for DB/App settings
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+│
+├── scripts/                               # 👈 Helper and post-deployment scripts
+│   ├── post-deploy.ps1                    # Final setup for WordPress on App Service
+│   ├── backup-mysql.sh                    # Cron-based DB backup
+│   ├── media-upload.py                    # Script to upload media files to blob
+│   └── wp-hardening.sh                    # Shell script to secure wp-config and lock dirs
+│
+├── artifacts/                             # 👈 Azure Artifacts (plugins/themes ZIPs)
+│   ├── plugins/
+│   │   └── seo-plugin-v1.0.0.zip
+│   ├── themes/
+│   │   └── custom-theme-v2.1.0.zip
+│   └── config/
+│       └── wp-settings-template.json
+│
+├── pipelines/                             # 👈 CI/CD Definitions
+│   ├── azure-pipelines.yml                # Azure DevOps pipeline
+│   └── github-actions.yml                 # GitHub Actions workflow
+│
+├── main.tf                                # Root orchestrator for all modules
+├── variables.tf                           # Global variables (referenced by modules)
+├── outputs.tf                             # Global outputs
+├── terraform.tfvars.example               # Example variables file
+├── .terraform.lock.hcl                    # Terraform dependency lock file
+├── README.md                              # Project overview, instructions
+└── .gitignore
 
 
-Module / Folder                 | Purpose
+Module / Folder              | Purpose
 ==============================================================================
 
-app_service_wordpress           | Deploy WordPress on App Service with autoscale, health checks
-mysql_flexible_server           | Secure backend DB with firewall rules, SSL enforced
-storage_cdn                     | Store WP media in Blob, serve via Azure CDN, apply CORS rules
-network                         | VNet, Subnets, Private Endpoints, NSGs
-monitoring                      | App Insights integration for logs and availability
-security                        | Enable WAF, force HTTPS, configure security headers and DDoS plan
-scripts/post-deploy.ps1         | Automate WordPress plugin install, theme setup, and initial config via PowerShell
-scripts/backup-mysql.sh         | Automate scheduled backup of MySQL Flexible Server database using Azure CLI
-scripts/media-upload.py         | Upload WordPress media to Azure Blob and set proper content-type/CORS
-scripts/wp-hardening.sh         | Enforce security hardening (file permissions, disable XML-RPC, secure headers)
-pipelines/azure-pipelines.yml   | CI/CD pipeline to deploy Terraform infra and trigger WordPress setup in Azure DevOps
-pipelines/github-actions.yml    | GitHub Actions CI/CD for infra provisioning and WordPress deployment
-environments/dev                | Dev-specific provider, backend config, and variable overrides
-environments/prod               | Prod-specific configuration with isolated state backend
-main.tf                         | Root Terraform config that calls individual modules
-variables.tf                    | Defines input variables for the Terraform modules
-outputs.tf                      | Exports essential values (e.g., WP URL, DB connection string)
+main.tf                      | Root module to orchestrate all infrastructure components
+variables.tf                 | Global input variables shared across modules
+outputs.tf                   | Global output values (App URL, DB endpoint, etc.)
+terraform.tfvars.example     | Example variable file for environment usage
+.gitignore                   | Git ignore rules (ignore state files, artifacts, etc.)
+README.md                    | Project overview, usage instructions, and architecture description
+
+/environments/
+dev/                         | Contains dev-specific Terraform configurations (state, vars, provider)
+prod/                        | Contains prod-specific Terraform configurations (state, vars, provider)
+backend.tf                   | Remote backend config for S3 or Azure Blob Storage
+terraform.tfvars             | Environment-specific variable values
+provider.tf                  | Azure provider configuration per environment
+
+/modules/
+app_service_wordpress/       | Deploys WordPress on Azure App Service (Linux plan, app settings)
+mysql_flexible_server/       | Provisions Azure MySQL Flexible Server and database
+storage_cdn/                 | Sets up Azure Blob Storage + CDN + CORS config for WordPress media
+monitoring/                  | Deploys Azure Monitor / App Insights / Log Analytics
+network/                     | VNet, Subnets, NSG rules, and optional Private Endpoints
+security/                    | Configures HTTPS-only, WAF rules, security headers, DDoS
+keyvault/                    | Creates Azure Key Vault for secret storage and RBAC access control
+
+/scripts/
+post-deploy.ps1              | Post-deployment tasks (PowerShell): App Service tweaks, file injection
+backup-mysql.sh              | Shell script to periodically back up MySQL database
+media-upload.py              | Python script to bulk upload media to Azure Blob Storage
+wp-hardening.sh              | Applies WordPress hardening (file permissions, directory lockdown)
+
+/artifacts/
+plugins/                     | Stores ZIPs for custom WordPress plugins to deploy via CI/CD
+themes/                      | Stores ZIPs for custom WordPress themes
+config/                      | Additional config templates (e.g., wp-settings JSON, prebuilt XMLs)
+
+/pipeline/
+azure-pipelines.yml          | Azure DevOps pipeline definition for CI/CD of Terraform + WP deployment
+github-actions.yml           | Optional GitHub Actions CI/CD workflow

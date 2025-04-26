@@ -1,0 +1,122 @@
+eks-network-platform/
+│
+├── environments/
+│   ├── dev/
+│   │   ├── backend.tf            # S3 + DynamoDB locking for Dev environment
+│   │   ├── provider.tf            # AWS provider using dev profile
+│   │   ├── terraform.tfvars       # Dev-specific input variables
+│   │   └── variables_override.tf  # (optional) override variables for dev
+│   │
+│   └── prod/
+│       ├── backend.tf             # S3 + DynamoDB locking for Prod environment
+│       ├── provider.tf            # AWS provider using assume_role
+│       ├── terraform.tfvars       # Prod-specific input variables
+│       └── variables_override.tf  # (optional) override variables for prod
+│
+├── modules/                       # Reusable modules for all environments
+│   ├── vpc/
+│   │   ├── main.tf                # VPC, Subnets, Route Tables, IGW, NAT GW
+│   │   ├── variables.tf           # Input variables for VPC module
+│   │   ├── outputs.tf             # Outputs like vpc_id, subnet_ids
+│   │   └── README.md              # Docs for this module
+│   │
+│   ├── eks/
+│   │   ├── main.tf                # EKS Cluster, Node Groups (managed/self-managed)
+│   │   ├── variables.tf           # Input variables for EKS module
+│   │   ├── outputs.tf             # Outputs like cluster_name, kubeconfig
+│   │   └── README.md              # Docs for this module
+│   │
+│   ├── istio/
+│   │   ├── main.tf                # Istio Helm installation
+│   │   ├── variables.tf           # Input variables for Istio (version, config)
+│   │   ├── outputs.tf             # Istio outputs (Ingress IPs, etc.)
+│   │   ├── values/
+│   │   │   └── istiod-values.yaml # Helm values for production-grade Istio setup
+│   │   └── README.md
+│   │
+│   ├── security/
+│   │   ├── main.tf                # Security Groups, IAM Roles, Network Policies
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   │
+│   ├── monitoring/
+│   │   ├── main.tf                # OpenTelemetry, CloudWatch, Fluentbit, Prometheus (via Helm)
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│
+├── global/
+│   ├── versions.tf                # Common provider versions (aws, kubernetes, helm)
+│   ├── variables.tf               # Global variables (used across all modules)
+│   └── provider_config.tf         # Optional shared provider configs if needed
+│
+├── main.tf                         # Root module — calling all submodules together
+├── outputs.tf                      # Exposing outputs (like cluster_endpoint, kubeconfig, etc.)
+├── variables.tf                    # Root input variables file (what main.tf expects)
+├── terraform.tfvars                # (Optional) Default tfvars at root level
+├── README.md                        # Full project documentation (HOWTOs)
+├── Makefile (optional)              # Useful shortcuts like "make plan-dev" or "make apply-prod"
+└── scripts/ (optional)
+    ├── init.sh                     # Custom script to init backend if needed
+    ├── deploy.sh                   # Shell script to run terraform plan/apply automatically
+    └── istio-custom-resources/      # If you want to pre-deploy Gateway, VirtualService YAMLs after Istio
+
+
+Module / Folder                             | Purpose
+==============================================================================================
+
+environments/dev/                           | Contains Dev-specific Terraform configurations (backend, provider, tfvars). Used for deploying into the Dev AWS account.
+environments/dev/backend.tf                 | Defines remote backend (S3 bucket, DynamoDB locking) for Dev state management.
+environments/dev/provider.tf                | AWS Provider setup using Dev profile or credentials.
+environments/dev/terraform.tfvars           | Dev-specific variable values (VPC CIDR, cluster name, instance types).
+environments/dev/variables_override.tf      | (Optional) Environment-specific overrides for default variables in Dev.
+environments/prod/                          | Contains Prod-specific Terraform configurations (backend, provider, tfvars). No manual intervention, only pipeline deployments.
+environments/prod/backend.tf                | Defines remote backend (S3 bucket, DynamoDB locking) for Prod state management.
+environments/prod/provider.tf               | AWS Provider setup using Assume Role (securely accessing Prod AWS account).
+environments/prod/terraform.tfvars          | Prod-specific variable values (different CIDRs, bigger nodes, HA setup).
+environments/prod/variables_override.tf     | (Optional) Environment-specific overrides for default variables in Prod.
+
+modules/vpc/                                | Creates core networking: VPC, Public/Private Subnets, Route Tables, Internet Gateway, NAT Gateway.
+modules/vpc/main.tf                         | Main resources definition for VPC and networking.
+modules/vpc/variables.tf                    | Defines input variables for the VPC module (CIDRs, AZs, tags).
+modules/vpc/outputs.tf                      | Exposes outputs like vpc_id, public_subnets, private_subnets.
+modules/vpc/README.md                       | Documentation on what this VPC module creates and expects.
+modules/eks/                                | Creates the EKS cluster, node groups, IAM roles, and necessary cluster configurations.
+modules/eks/main.tf                         | Main EKS cluster and node group resources.
+modules/eks/variables.tf                    | Input variables for EKS (cluster name, node settings, networking info).
+modules/eks/outputs.tf                      | Exposes outputs like cluster_name, kubeconfig, node_group_role_arn.
+modules/eks/README.md                       | Documentation for EKS module.
+modules/istio/                              | Installs Istio Service Mesh using Helm. Handles secure internal traffic, mTLS, ingress gateways.
+modules/istio/main.tf                       | Helm releases for Istio base, Istiod, and ingress gateway.
+modules/istio/variables.tf                  | Input variables for customizing Istio installation (version, enable mTLS, replicas).
+modules/istio/outputs.tf                    | Outputs like Istio ingress IPs, service names.
+modules/istio/values/                       | Holds istiod-values.yaml for production-grade customized Istio configuration.
+modules/istio/README.md                     | Istio module documentation (installation, configuration tips).
+modules/security/                           | Manages IAM Roles, Kubernetes RBAC, AWS Security Groups, and Kubernetes Network Policies.
+modules/security/main.tf                    | Security resources creation (IAM, SGs, network policies).
+modules/security/variables.tf               | Variables for controlling security setups (role names, port rules).
+modules/security/outputs.tf                 | Outputs like IAM role ARNs or security group IDs.
+modules/security/README.md                  | Documentation for security module.
+modules/monitoring/                         | Deploys monitoring tools (OpenTelemetry Collector, CloudWatch agent, Fluentbit, Prometheus, Grafana).
+modules/monitoring/main.tf                  | Helm releases and monitoring components setup.
+modules/monitoring/variables.tf             | Input variables to enable/disable different monitoring parts.
+modules/monitoring/outputs.tf               | Monitoring-specific outputs (log group names, collector endpoints).
+modules/monitoring/README.md                | Documentation for monitoring stack.
+
+global/                                     | Stores shared/global settings across the whole project.
+global/versions.tf                          | Centralized provider versions (AWS, Helm, Kubernetes).
+global/variables.tf                         | Global reusable variables (region, tags, environment).
+global/provider_config.tf                   | Optional: shared provider config settings across environments.
+
+main.tf                                     | Root-level Terraform — orchestrates calling all modules properly.
+outputs.tf                                  | Root outputs to export (like VPC ID, Cluster Endpoint, Ingress IPs).
+variables.tf                                | Root input variables (cluster settings, VPC info, etc.).
+terraform.tfvars                            | (Optional) Default values if not passed through environment-specific tfvars.
+README.md                                   | Master project documentation (folder structure, how to deploy, etc.).
+Makefile (optional)                         | Shortcuts for terraform commands (e.g., make plan-dev, make apply-prod).
+
+scripts/ (optional)                         | Helper shell scripts for automation.
+scripts/init.sh                             | Script to automate Terraform backend initialization.
+scripts/deploy.sh                           | Script to automate Terraform plan/apply processes.
+scripts/istio-custom-resources/             | Predefined Istio Gateway, VirtualService YAML files (to deploy after Istio installation).
