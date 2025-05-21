@@ -1,0 +1,36 @@
+### Bitbucket Pipeline (Terraform + Ansible + tfsec + Jira Smart Commits) ##################################
+
+image: hashicorp/terraform:1.6.6
+
+pipelines:
+  branches:
+    dev:
+      - step:
+          name: Terraform + Ansible Deploy to DEV
+          services:
+            - docker
+          caches:
+            - terraform
+          script:
+            - apt-get update && apt-get install -y python3-pip unzip jq
+            - pip3 install ansible boto3 botocore awscli checkov
+            - curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+            # Terraform Security Scan
+            - echo "🔐 Running tfsec..."
+            - tfsec environments/dev
+            - echo "🔐 Running Checkov..."
+            - checkov -d environments/dev
+
+            # Run Terraform + Ansible in one script
+            - chmod +x scripts/deploy.sh
+            - ./scripts/deploy.sh dev
+
+            # Optional: Update Jira via Smart Commit style
+            - ISSUE_KEY=$(git log -1 --pretty=format:"%s" | grep -oE '[A-Z]+-[0-9]+')
+            - echo "Jira issue key: $ISSUE_KEY"
+            - >
+              curl -u $JIRA_USER:$JIRA_TOKEN
+              -X POST "https://yourdomain.atlassian.net/rest/api/2/issue/$ISSUE_KEY/comment"
+              -H "Content-Type: application/json"
+              -d "{\"body\": \"✅ Deployed $ISSUE_KEY via Bitbucket Pipeline to DEV.\"}"

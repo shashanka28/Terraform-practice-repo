@@ -1,0 +1,13 @@
+- name: Upload default contact flow
+  shell: >
+    aws connect create-contact-flow
+    --instance-id {{ connect_instance_id }}
+    --name "{{ default_contact_flow_name }}"
+    --type CONTACT_FLOW
+    --content file://modules/connect/flows/connect_flow.json
+  register: contact_flow_result
+  ignore_errors: true
+
+- name: Print contact flow upload result
+  debug:
+    var: contact_flow_result.stdout

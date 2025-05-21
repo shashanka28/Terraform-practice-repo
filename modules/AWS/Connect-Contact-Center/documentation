@@ -1,16 +1,15 @@
 
 
-
 aws-connect-platform/
 │
-├── environments/                       # Env-specific overrides + entrypoints
+├── environments/                        # Separate state and config per environment
 │   ├── dev/
-│   │   ├── backend.tf                  # Remote backend (S3/DynamoDB)
-│   │   ├── main.tf                     # Module composition for dev
-│   │   ├── providers.tf                # Provider config
-│   │   ├── terraform.tfvars            # Dev variables
+│   │   ├── backend.tf                   # Remote backend (S3 + DynamoDB)
+│   │   ├── main.tf                      # Calls all required modules
+│   │   ├── providers.tf                 # AWS provider configuration
+│   │   ├── terraform.tfvars             # Environment-specific values
 │   │   └── variables.tf
-│   ├── nonprod/
+│   ├── test/
 │   │   ├── backend.tf
 │   │   ├── main.tf
 │   │   ├── providers.tf
@@ -23,114 +22,84 @@ aws-connect-platform/
 │       ├── terraform.tfvars
 │       └── variables.tf
 │
-├── modules/                            # All reusable, parameterized modules
+├── modules/                             # Reusable Terraform modules
 │   ├── connect/
 │   │   ├── main.tf
-│   │   ├── variables.tf
 │   │   ├── outputs.tf
+│   │   ├── variables.tf
 │   │   └── flows/
 │   │       └── default_contact_flow.json
+│   ├── vpc/
+│   ├── iam/
+│   │   └── policies/
+│   ├── kms/
+│   ├── s3/
+│   ├── dynamodb/
+│   ├── lambda/
+│   │   └── lambda_function/
+│   │       ├── handler.py
+│   ├── api_gateway/
+│   ├── sns/
+│   └── cloudwatch/
+│       └── dashboards/
+│           └── connect-dashboard.json
 │
-│   ├── vpc/                            # Optional if Lambdas need private subnets
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
+├── ansible/                             # Post-Terraform configuration
+│   ├── playbooks/
+│   │   └── configure_connect.yml        # Upload flows, assign users, etc.
+│   ├── roles/
+│   │   └── connect_config/
+│   │       └── tasks/
+│   │           └── main.yml
+│   └── group_vars/
+│       └── all.yml                      # Global vars like region, instance ID
 │
-│   ├── iam/                            # IAM roles and policies
-│   │   ├── main.tf
-│   │   ├── policies/
-│   │   │   └── connect_lambda_policy.json
-│   │   ├── variables.tf
-│   │   └── outputs.tf
+├── cicd/                                # CI/CD Pipelines
+│   ├── bitbucket-pipelines.yml          # Full environment-aware pipeline
 │
-│   ├── kms/                            # Encryption keys for S3/DynamoDB
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
+├── scripts/                             # Automation scripts
+│   ├── deploy.sh                        # Called from pipeline per env
+│   ├── plan.sh                          # Used for previewing changes
+│   └── post_apply_ansible.sh            # Optional manual runner
 │
-│   ├── s3/                             # Recording and logging buckets
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
 │
-│   ├── dynamodb/                       # Call session metadata
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│
-│   ├── lambda/                         # For dynamic routing and integrations
-│   │   ├── main.tf
-│   │   ├── lambda_function/
-│   │   │   └── handler.py              # OR lambda.zip if precompiled
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│
-│   ├── api_gateway/                    # Optional external API integrations
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│
-│   ├── sns/                            # Alerting and notification topics
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│
-│   └── cloudwatch/                     # Dashboards and alarms
-│       ├── main.tf
-│       ├── dashboards/
-│       │   └── connect-dashboard.json
-│       ├── variables.tf
-│       └── outputs.tf
-│
-├── shared/                             # Shared global config (optional)
-│   ├── locals.tf                       # Tags, naming conventions, regions
-│   └── tags.tf
-│
-├── scripts/                            # Optional: automation hooks
-│   ├── pre_validation.sh
-│   ├── post_apply_ansible.sh
-│   └── upload_connect_flows.sh
-│
-├── cicd/                               # CI/CD pipeline definitions
-│   ├── github-actions.yml
-│   └── bitbucket-pipelines.yml
-│
-├── .terraform.lock.hcl
-├── .gitignore
-├── README.md
-└── terragrunt.hcl                     # Optional if using Terragrunt for DRY env mgmt
+└── JIRA-TRACEABILITY.md                 # Maps Jira ↔ PR ↔ Confluence traceability
 
 
 
 
-Module / Folder         | Purpose                                                                                                                                             |
- --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
- 
- `environments/`             | Environment-specific Terraform configurations for `dev`, `nonprod`, and `prod`. Each contains its own backend, provider, and `main.tf` to call modules. |
- `environments/dev/`         | Dev-specific variables and resources — isolated state for safe testing.                                                                                 |
- `environments/nonprod/`     | Pre-production environment used for staging and QA.                                                                                                     |
- `environments/prod/`        | Production deployment — uses hardened configs and stricter security.                                                                                    |
- 
- `modules/`                  | Collection of reusable Terraform modules used by all environments.                                                                                      |
- `modules/connect/`          | Creates and configures Amazon Connect instance, contact flows, queues, hours of operation.                                                              |
- `modules/lambda/`           | Deploys Lambda functions to support contact flows (e.g., routing logic, data lookup).                                                                   |
- `modules/vpc/`              | Optional — used if Lambdas or API Gateway need private subnet access. Creates VPC, subnets, NAT Gateway, and route tables.                              |
- `modules/iam/`              | Manages IAM roles, policies, and permissions for Amazon Connect, Lambda, API Gateway, etc.                                                              |
- `modules/kms/`              | Creates KMS keys for encryption of S3 buckets, DynamoDB, and other secure services.                                                                     |
- `modules/s3/`               | Provisions S3 buckets for call recordings, logs, and reports with versioning and encryption.                                                            |
- `modules/dynamodb/`         | Creates DynamoDB tables to store call session metadata or routing data.                                                                                 |
- `modules/api_gateway/`      | Optional — sets up REST APIs for integrating Connect with external/internal systems.                                                                    |
- `modules/sns/`              | Creates SNS topics for alerting, notifications, or operational messaging.                                                                               |
- `modules/cloudwatch/`       | Configures CloudWatch alarms, log groups, and dashboards for Connect and Lambda.                                                                        |
- 
- `shared/`                   | Contains global/shared Terraform configs like tags, locals, naming standards.                                                                           |
- 
- `scripts/`                  | Bash scripts for pre-validation, uploading contact flows, and post-deploy Ansible hooks.                                                                |
- 
- `cicd/`                     | Stores CI/CD pipeline definitions (`github-actions.yml`, `bitbucket-pipelines.yml`) for automated deployment.                                           |
- 
- `terragrunt.hcl` (optional) | Terragrunt support for DRY modular reuse and centralized env management (if used).                                                                      |
- `.gitignore`                | Git ignore rules to exclude Terraform local state, secrets, and build files.                                                                            |
- `README.md`                 | Documentation for infrastructure setup, modules, and deployment process.                                                                                |
+ **Module / Folder**                | **Purpose**                                                                                                                               |
+ =======================================================================================================================
 
+ `environments/`                    | Contains separate infrastructure configs (`main.tf`, `tfvars`) per environment (dev, test, prod). Enables isolated deployments and state. |
+ `environments/dev/`                | Environment-specific Terraform for development/testing deployments.                                                                       |
+ `environments/test/`               | Intermediate testing or QA environment before production.                                                                                 |
+ `environments/prod/`               | Secure and approved production deployment configurations.                                                                                 |
+
+ `modules/`                         | Reusable Terraform modules organized by AWS service. Central to Infra-as-Code.                                                            |
+ `modules/connect/`                 | Provisions Amazon Connect instance, contact flows, queues, and hours of operation.                                                        |
+ `modules/vpc/`                     | (Optional) Creates VPC, subnets, NAT for private Lambda/API connectivity.                                                                 |
+ `modules/iam/`                     | Manages IAM roles and custom policies for Connect, Lambda, API Gateway, etc.                                                              |
+ `modules/iam/policies/`            | Stores JSON policy documents to be used with IAM module.                                                                                  |
+ `modules/kms/`                     | Creates KMS keys for encryption (S3, DynamoDB, logs).                                                                                     |
+ `modules/s3/`                      | Provisions S3 buckets for call recordings, logs, reports with encryption and lifecycle policies.                                          |
+ `modules/dynamodb/`                | Defines tables for storing Connect session metadata or lookup configs.                                                                    |
+ `modules/lambda/`                  | Creates Lambda functions used in contact flows or Connect integrations.                                                                   |
+ `modules/lambda/lambda_function/`  | Stores Lambda function source code (`handler.py`, etc.).                                                                                  |
+ `modules/api_gateway/`             | Creates API Gateway for exposing Lambda functionality externally.                                                                         |
+ `modules/sns/`                     | Configures SNS topics for notification or alerting workflows.                                                                             |
+ `modules/cloudwatch/`              | Defines monitoring, log groups, alarms for Connect, Lambda, and metrics.                                                                  |
+ `modules/cloudwatch/dashboards/`   | JSON dashboards for CloudWatch to visualize service metrics.                                                                              |
+
+ `ansible/`                         | Ansible automation for post-Terraform configuration (flows, user setup).                                                                  |
+ `ansible/playbooks/`               | Main playbooks to execute (`configure_connect.yml`, etc.).                                                                                |
+ `ansible/roles/`                   | Role-based automation logic for modular Ansible execution.                                                                                |
+ `ansible/group_vars/`              | Global variables shared across roles/playbooks.                                                                                           |
+
+ `cicd/`                            | CI/CD pipeline definitions and reusable templates.                                                                                        |
+ `cicd/bitbucket-pipelines.yml`     | Main Bitbucket pipeline with multi-env deployments and security scans.                                                                    |
+
+ `scripts/`                         | Shell scripts used by CI/CD pipeline (`deploy.sh`, `plan.sh`, etc.).                                                                      |
+
+ `JIRA-TRACEABILITY.md`             | Maps the Jira → PR → Pipeline → Confluence integration strategy.                                                                          |
 

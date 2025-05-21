@@ -1,0 +1,4 @@
+aws_region: us-east-1
+connect_instance_id: "{{ lookup('env', 'CONNECT_INSTANCE_ID') }}"
+default_contact_flow_name: "default-flow-dev"
+lambda_function_arn: "{{ lookup('env', 'LAMBDA_ARN') }}"

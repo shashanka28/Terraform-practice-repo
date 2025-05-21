@@ -1,0 +1,18 @@
+{
+    "Version": "2019-10-30",
+    "StartAction": "1",
+    "Actions": [
+      {
+        "Identifier": "1",
+        "Type": "MessageParticipant",
+        "Parameters": {
+          "Text": "Welcome to the Amazon Connect demo call flow."
+        },
+        "Transitions": {
+          "NextAction": "Disconnect",
+          "Errors": []
+        }
+      }
+    ]
+  }
+  
