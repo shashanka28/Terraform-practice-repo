@@ -43,7 +43,46 @@ ai-ml-infra-aws/
 │   │   ├── speech_synthesis.tf
 │   │   └── variables.tf
 │   └── bedrock/
-│       ├── foundation_model.tf
+│   |   ├── foundation_model.tf
+│   |   └── variables.tf
+│   ├── org_structure/              # AWS Organizations - OUs, accounts
+│   │   ├── main.tf
+│   │   └── variables.tf
+│   ├── scp/                        # Service Control Policies
+│   │   ├── allow-list.tf
+│   │   ├── deny-unsupported.tf
+│   │   └── variables.tf
+│   ├── config_rules/              # AWS Config rules and compliance
+│   │   ├── required-tags.tf
+│   │   ├── no-public-s3.tf
+│   │   └── variables.tf
+│   └── config_delivery/           # AWS Config delivery S3/SNS setup
+│       ├── delivery.tf
+│       └── variables.tf
+├── scripts/
+│   ├── package_lambda.sh            # Script to zip and upload Lambda code
+│   └── setup_env.sh                # Environment setup for dev/prod
+├── environments/
+│   ├── dev/
+│   │   └── terraform.tfvars
+│   └── prod/
+│       └── terraform.tfvars
+└── README.md                       # Project overview and usage
+
+
+│   ├── org_structure/              # AWS Organizations - OUs, accounts
+│   │   ├── main.tf
+│   │   └── variables.tf
+│   ├── scp/                        # Service Control Policies
+│   │   ├── allow-list.tf
+│   │   ├── deny-unsupported.tf
+│   │   └── variables.tf
+│   ├── config_rules/              # AWS Config rules and compliance
+│   │   ├── required-tags.tf
+│   │   ├── no-public-s3.tf
+│   │   └── variables.tf
+│   └── config_delivery/           # AWS Config delivery S3/SNS setup
+│       ├── delivery.tf
 │       └── variables.tf
 ├── scripts/
 │   ├── package_lambda.sh            # Script to zip and upload Lambda code
@@ -78,7 +117,14 @@ ai-ml-infra-aws/
  `modules/comprehend/`          | Integrates Amazon Comprehend for NLP tasks (e.g., sentiment or PII detection)          
  `modules/transcribe/`          | Enables audio transcription using Amazon Transcribe                                    
  `modules/polly/`               | Converts ML output to speech using Amazon Polly                                        
- `modules/bedrock/`             | Sets up Amazon Bedrock generative AI models (like Anthropic Claude, Titan, etc.)       
+ `modules/bedrock/`             | Sets up Amazon Bedrock generative AI models (like Anthropic Claude, Titan, etc.)
+
+ 
+ `modules/org_structure/`       | Defines the AWS Organizations hierarchy with OUs and account registration.                            
+ `modules/scp/`                 | Creates Service Control Policies (SCPs) to restrict actions and enforce organization-wide guardrails.
+ `modules/config_rules/`        | Deploys AWS Config managed rules to check and enforce compliance across resources.                    
+ `modules/config_delivery/`     | Sets up S3 and SNS delivery channels for AWS Config logs and compliance notifications.         
+       
 
  `environments/dev/`            | Contains `terraform.tfvars` for dev environment        
  `environments/prod/`           | Contains `terraform.tfvars` for production environment 
