@@ -1,0 +1,89 @@
+
+ai-ml-infra-aws/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml               # GitHub Actions CI/CD pipeline
+├── backend.tf                      # Remote state backend config (e.g., S3 + DynamoDB)
+├── main.tf                         # Root module wiring all child modules
+├── variables.tf                    # Global variable declarations
+├── outputs.tf                      # Root module outputs
+├── terraform.tfvars                # Default variable values (not committed to VCS)
+├── modules/
+│   ├── s3_bucket/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── sagemaker/
+│   │   ├── model.tf
+│   │   ├── endpoint_config.tf
+│   │   ├── endpoint.tf
+│   │   └── variables.tf
+│   ├── iam/
+│   │   ├── sagemaker_role.tf
+│   │   ├── lambda_exec_role.tf
+│   │   └── variables.tf
+│   ├── lambda/
+│   │   ├── lambda.tf
+│   │   ├── policy.tf
+│   │   └── variables.tf
+│   ├── api_gateway/
+│   │   ├── api.tf
+│   │   └── variables.tf
+│   ├── cloudwatch/
+│   │   ├── logs.tf
+│   │   ├── alarms.tf
+│   │   └── variables.tf
+│   ├── comprehend/
+│   │   ├── detect_sentiment.tf
+│   │   └── variables.tf
+│   ├── transcribe/
+│   │   ├── job.tf
+│   │   └── variables.tf
+│   ├── polly/
+│   │   ├── speech_synthesis.tf
+│   │   └── variables.tf
+│   └── bedrock/
+│       ├── foundation_model.tf
+│       └── variables.tf
+├── scripts/
+│   ├── package_lambda.sh            # Script to zip and upload Lambda code
+│   └── setup_env.sh                # Environment setup for dev/prod
+├── environments/
+│   ├── dev/
+│   │   └── terraform.tfvars
+│   └── prod/
+│       └── terraform.tfvars
+└── README.md                       # Project overview and usage
+
+
+
+ Folder/File                    | Purpose                                                                  
+ =====================================================================================================================
+
+ `main.tf`                      | Orchestrates all modules and resources                                   
+ `variables.tf`                 | Declares root-level input variables                                      
+ `outputs.tf`                   | Outputs from the root module (e.g., endpoint URL)                        
+ `terraform.tfvars`             | Stores real values for variables (per environment)                       
+ `backend.tf`                   | Configures remote state backend (e.g., S3 bucket + DynamoDB for locking) 
+ `environments/`                | Stores environment-specific variable files (`dev`, `prod`, etc.)         
+ `scripts/`                     | Utility shell scripts for automation                                     
+ `.github/workflows/`           | GitHub Actions CI/CD automation                                          
+
+ `modules/s3_bucket/`           | Creates S3 bucket for storing ML models and Lambda deployment packages                 
+ `modules/sagemaker/`           | Provisions SageMaker model, endpoint configuration, and deployment                     
+ `modules/iam/`                 | Manages IAM roles and policies for SageMaker, Lambda, and Bedrock access               
+ `modules/lambda/`              | Deploys AWS Lambda function that acts as a bridge between API Gateway and SageMaker    
+ `modules/api_gateway/`         | Sets up REST API using API Gateway to expose ML endpoint via HTTP                      
+ `modules/cloudwatch/`          | Enables logging and monitoring for Lambda, SageMaker endpoints (e.g., errors, latency) 
+ `modules/comprehend/`          | Integrates Amazon Comprehend for NLP tasks (e.g., sentiment or PII detection)          
+ `modules/transcribe/`          | Enables audio transcription using Amazon Transcribe                                    
+ `modules/polly/`               | Converts ML output to speech using Amazon Polly                                        
+ `modules/bedrock/`             | Sets up Amazon Bedrock generative AI models (like Anthropic Claude, Titan, etc.)       
+
+ `environments/dev/`            | Contains `terraform.tfvars` for dev environment        
+ `environments/prod/`           | Contains `terraform.tfvars` for production environment 
+
+ `package_lambda.sh`            | Zips and uploads Lambda function code to S3                        
+ `setup_env.sh`                 | Bootstraps Terraform environment variables for automation or CI/CD 
+
+ `.github/workflows/deploy.yml` | Automates Terraform init → plan → apply steps on push/pull\_request 
