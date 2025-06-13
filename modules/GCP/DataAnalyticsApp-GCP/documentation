@@ -1,0 +1,68 @@
+gcp-order-analytics/
+│
+├── envs/                          # Per-environment Terraform configurations
+│   ├── dev/
+│   │   ├── backend.tf             # Remote GCS backend config
+│   │   ├── provider.tf            # GCP provider config
+│   │   ├── terraform.tfvars       # Dev-specific variables
+│   │   ├── main.tf                # Module instantiations for dev
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── prod/
+│       └── (same as dev)
+│
+├── modules/                       # All reusable Terraform modules
+│   ├── vpc/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── cloud_run/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── pubsub/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── cloud_sql/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── bigquery/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── storage/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── iam/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+├── cicd/
+│   └── github-actions/
+│       └── deploy.yml             # GitHub Actions CI/CD workflow for Terraform
+│
+├── .gitignore
+├── README.md
+
+
+ **Module / Folder**   | **Purpose**                                                                 | **Key Resources**                                                         |
+===============================================================================================================================================
+ `modules/vpc`           Creates the private network and VPC connector for serverless to DB access     `google_compute_network`, `google_vpc_access_connector`, `subnet`, routes |
+ `modules/cloud_run`     Deploys the gRPC microservice on Cloud Run with proper connectivity           `google_cloud_run_service`, IAM bindings, environment variables           |
+ `modules/cloud_sql`     Provisions the Cloud SQL PostgreSQL database with private IP                  `google_sql_database_instance`, `google_sql_user`, `google_sql_database`  |
+ `modules/pubsub`        Sets up Pub/Sub topic (and optional subscriptions) for messaging              `google_pubsub_topic`, `google_pubsub_subscription`                       |
+ `modules/bigquery`      Creates BigQuery datasets and tables for analytics and reporting              `google_bigquery_dataset`, `google_bigquery_table`                        |
+ `modules/storage`       Creates GCS buckets for backups, static assets, or terraform state            `google_storage_bucket`                                                   |
+ `modules/iam`           Defines roles and permissions for service accounts and resources              `google_project_iam_*`, `google_service_account`, bindings                |
+ `envs/dev` / `prod`     Environment-specific config: backend, variables, and root module references   `terraform.tfvars`, `backend.tf`, `provider.tf`, `main.tf`, `outputs.tf`  |
+ `cicd/github-actions`   Stores GitHub Actions CI/CD workflows for Terraform automation                `.yml` files for Terraform init, plan, apply                              |
