@@ -1,0 +1,33 @@
+stages:
+  - validate
+  - plan
+  - apply
+
+variables:
+  TF_VAR_project_id: $CI_PROJECT_ID
+  GOOGLE_CREDENTIALS: $GCP_SERVICE_ACCOUNT_KEY_JSON
+
+before_script:
+  - apk add --no-cache curl bash git
+  - curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  - terraform --version
+
+validate:
+  stage: validate
+  script:
+    - terraform fmt -check
+    - terraform init -backend-config=environments/dev/backend.tfvars
+    - terraform validate
+
+plan:
+  stage: plan
+  script:
+    - terraform init -backend-config=environments/dev/backend.tfvars
+    - terraform plan -var-file=environments/dev/variables.tfvars
+
+apply:
+  stage: apply
+  when: manual
+  script:
+    - terraform init -backend-config=environments/dev/backend.tfvars
+    - terraform apply -auto-approve -var-file=environments/dev/variables.tfvars

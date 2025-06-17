@@ -16,46 +16,58 @@ Logging and monitoring using Google Cloud Logging & Cloud Monitoring.
 
 
 gcp-terraform-project/
-│── modules/
-│   ├── networking/
+│
+├── modules/
+│   ├── networking/               # VPC, Subnets, Routes, Firewall
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   ├── outputs.tf
-│   ├── gke/
+│   │
+│   ├── gke/                      # GKE Cluster, Node Pool, WI
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   ├── outputs.tf
-│   ├── storage/
+│   │
+│   ├── storage/                  # GCS Buckets + Optional KMS
+│   │   ├── main.tf               # bucket, versioning, lifecycle
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │
+│   ├── secret-manager/          # Secrets with IAM bindings
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   ├── outputs.tf
-│   ├── secret-manager/
+│   │
+│   ├── iam/                     # IAM roles, bindings, workload identity
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   ├── outputs.tf
-│   ├── iam/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   ├── monitoring/
-│   │   ├── main.tf
+│   │
+│   ├── monitoring/              # Monitoring Dashboards, Alert Policies
+│   │   ├── main.tf              # This was missing actual resources
 │   │   ├── variables.tf
 │   │   ├── outputs.tf
 │
-│── environments/
+├── environments/
 │   ├── dev/
-│   │   ├── backend.tfvars
-│   │   ├── variables.tfvars
+│   │   ├── backend.tf           # backend "gcs" block (not just .tfvars)
+│   │   ├── backend.tfvars       # contains `bucket`, `prefix`, `credentials`
+│   │   ├── variables.tfvars     # project_id, region, etc.
+│   │
 │   ├── prod/
+│   │   ├── backend.tf
 │   │   ├── backend.tfvars
 │   │   ├── variables.tfvars
 │
-│── ci-cd/
-│   ├── gitlab-ci.yml
+├── ci-cd/
+│   ├── gitlab-ci.yml            # Pipeline with format, init, plan, apply
+│   └── templates/
+│       ├── terraform-steps.yml  # Optional reusable job templates
 │
-│── main.tf
-│── variables.tf
-│── outputs.tf
-│── provider.tf
-│── terraform.tfvars
-│── README.md
+├── provider.tf                  # Google + Terraform backend provider
+├── terraform.tfvars             # Optional for root project-level vars
+├── variables.tf                 # Variables shared across root modules
+├── outputs.tf                   # Output project-wide info (e.g., GKE name)
+├── main.tf                      # Module calls
+├── README.md                    # Architecture, usage, environment setup
+
